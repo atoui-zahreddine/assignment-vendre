@@ -1,6 +1,5 @@
 import useFetchEmployeesWithPagination from "./hooks/useFetchEmployeesWithPagination";
-import Pagination from "./components/Pagination";
-import Employees from "./components/Employees";
+import { Employees, Pagination } from "./components";
 
 function App() {
   const {
@@ -14,21 +13,22 @@ function App() {
     hasNext,
     totalCount,
     pageSize,
+    loading,
   } = useFetchEmployeesWithPagination();
 
   return (
     <div className="p-4">
-      <Employees employees={employees} />
+      <Employees loading={loading} employees={employees} />
 
       <Pagination
         totalCount={totalCount}
         pageSize={pageSize}
         hasPrev={hasPrev}
         currentPage={currentPage}
-        goToPage={goToPage}
-        prevPage={prevPage}
         pages={pages}
         hasNext={hasNext}
+        goToPage={goToPage}
+        prevPage={prevPage}
         nextPage={nextPage}
       />
     </div>

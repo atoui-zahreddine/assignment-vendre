@@ -12,8 +12,13 @@ interface ApiResponse {
 
 const useFetchEmployeesWithPagination = () => {
   const [data, setData] = useState<ApiResponse>();
-  const [pages, setPages] = useState(0);
+  const [loading, setLoading] = useState<boolean>(false);
   const [page, setPage] = useState(1);
+
+  const employees = data?.data || [];
+  const totalCount = data?.total || 0;
+  const pageSize = data?.per_page || 0;
+  const pages = data?.total_pages || 0;
   const hasNext = pages > 1 && page <= pages - 1;
   const hasPrev = pages > 1 && page > 1;
 
@@ -28,20 +33,29 @@ const useFetchEmployeesWithPagination = () => {
   const goToPage = (newPage: number) => {
     if (newPage <= pages && newPage >= 1) setPage(newPage);
   };
+  const getEmployees = async () => {
+    try {
+      setLoading(true);
+      const fetchResult = await fetch(
+        `https://reqres.in/api/users?page=${page}`
+      );
+      const data = await fetchResult.json();
+      setData(data);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useSafeUseEffect(() => {
-    fetch(`https://reqres.in/api/users?page=${page}`)
-      .then((res) => res.json())
-      .then((data: ApiResponse) => {
-        setData(data);
-        setPages(data.total_pages);
-      });
+    getEmployees()
   }, [page]);
 
   return {
-    employees: data?.data || [],
-    totalCount: data?.total || 0,
-    pageSize: data?.per_page || 0,
+    employees,
+    totalCount,
+    pageSize,
     pages,
     hasNext,
     hasPrev,
@@ -49,6 +63,7 @@ const useFetchEmployeesWithPagination = () => {
     goToPage,
     nextPage,
     prevPage,
+    loading,
   };
 };
 

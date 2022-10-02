@@ -31,7 +31,9 @@ const Pagination: FunctionComponent<Props> = ({
     totalCount,
   });
 
-  return pages === 0 ? null : (
+  if (pages === 0) return null;
+
+  return (
     <div className="text-center">
       <nav>
         <ul className="inline-flex -space-x-px">
